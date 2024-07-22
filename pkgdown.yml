@@ -1,0 +1,8 @@
+pandoc: 3.1.11
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles: {}
+last_built: 2024-07-22T17:37Z
+urls:
+  reference: https://harvard-ufds.github.io/saeczi/reference
+  article: https://harvard-ufds.github.io/saeczi/articles
