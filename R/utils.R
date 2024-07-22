@@ -77,9 +77,11 @@ fit_zi <- function(samp_dat,
   )
   
   # Fit logistic mixed effects on ALL data
-  glmer_z <- suppressMessages(
-    lme4::glmer(log_formula, data = samp_dat, family = 'binomial')
-  )
+  # glmer_z <- suppressMessages(
+  #   lme4::glmer(log_formula, data = samp_dat, family = 'binomial')
+  # )
+  
+  glmer_z <- glm(log_formula, data = samp_dat, family = "binomial")
   
   return(list(lmer = lmer_nz, glmer = glmer_z))
   
@@ -354,10 +356,10 @@ mod_param_fmt <- function(.fit, ref = NULL) {
     .glmer <- .fit$glmer
     
     beta_lm <- lme4::fixef(.lmer)
-    beta_glm <- lme4::fixef(.glmer)
+    beta_glm <- coef(.glmer)
     
     ref_lm <- lme4::ranef(.lmer)[[1]]
-    ref_glm <- lme4::ranef(.glmer)[[1]]
+    ref_glm <- data.frame(rep(0, nrow(ref_lm)))
     
     u_lm <- setNames(
       ref_lm[ ,1],
@@ -365,7 +367,7 @@ mod_param_fmt <- function(.fit, ref = NULL) {
     )
     u_glm <- setNames(
       ref_glm[ ,1],
-      rownames(ref_glm)
+      rownames(ref_lm)
     ) 
   } else {
     lm_terms <- ref$.lm[!grepl("\\|", ref$.lm)]
@@ -458,10 +460,12 @@ mse_coefs <- function(lmer_model, glmer_model) {
   sig2_eps_hat <- subset(model_summary_df, grp == "Residual")$vcov
   
   # from glmer model
-  alpha_1 <- glmer_model@beta
+  alpha_1 <- unname(coef(glmer_model))
   
-  b_i <- lme4::ranef(glmer_model)[[1]][,1]
-  b_domain_levels <- rownames(lme4::ranef(glmer_model)[[1]])
+  
+  # changed these to set to 0
+  b_i <- rep(0, length(unique(glmer_model$data$COUNTYFIPS)))
+  b_domain_levels <- unique(glmer_model$data$COUNTYFIPS)
   
   return(list(
     beta_hat = beta_hat, sig2_mu_hat = sig2_mu_hat,

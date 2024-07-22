@@ -74,7 +74,9 @@ saeczi <- function(samp_dat,
   log_X <- unlist(str_extract_all_base(deparse(log_formula[[3]]), "\\w+"))
   rand_intercept <- paste0("( 1 | ", domain_level, " )")
   lin_formula <- reformulate(c(lin_X, rand_intercept), response = Y)
-  log_formula <- reformulate(c(log_X, rand_intercept), response = paste0(Y, "!= 0"))
+  # log_formula <- reformulate(c(log_X, rand_intercept), response = paste0(Y, "!= 0"))
+  log_formula <- reformulate(c(log_X), response = paste0(Y, "!= 0"))
+  
 
   all_preds <- unique(c(lin_X, log_X))
 
@@ -99,7 +101,7 @@ saeczi <- function(samp_dat,
                                        all_preds)
 
     boot_lin_formula <- reformulate(c(lin_X, rand_intercept), "response")
-    boot_log_formula <- reformulate(c(log_X, rand_intercept), "response != 0")
+    boot_log_formula <- reformulate(c(log_X), "response != 0")
 
     if (estimand == "means") {
       boot_truth <- boot_pop_data |>
